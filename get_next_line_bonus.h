@@ -1,35 +1,51 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lib_gnl.h                              :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joao-alm <support@toujoustudios.net>       +#+  +:+       +#+        */
+/*   By: joao-alm <joao-alm@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/08 16:19:34 by joao-alm          #+#    #+#             */
-/*   Updated: 2024/11/08 17:58:27 by joao-alm         ###   ########.fr       */
+/*   Created: 2025/02/24 11:29:20 by joao-alm          #+#    #+#             */
+/*   Updated: 2025/02/24 11:29:29 by joao-alm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_BONUS_H
 # define GET_NEXT_LINE_BONUS_H
 
-# include <stdlib.h>
-
+/**
+ * @def BUFFER_SIZE
+ *
+ * @brief Sets the buffer size for reading data.
+ *
+ * Defaults to 1069 bytes if not already defined.
+ */
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1069
 # endif
 
-# ifndef FD_MAX
-#  define FD_MAX 69
-# endif
+/**
+ * @struct s_list
+ * @brief A node in a singly linked list.
+ *
+ * This structure represents an element in a linked list,
+ * holding data and a pointer to the next node.
+ */
+typedef struct s_list
+{
+	void			*content; /**< Content of the node */
+	struct s_list	*next; /**< Pointer to the next node */
+}					t_list;
 
-// get_next_line_util_bonus
-char	*ft_strchr(const char *str, char c);
-size_t	ft_strlen(const char *str);
-void	*ft_calloc(size_t nmemb, size_t size);
-char	*ft_strjoin(char *s1, char *s2);
+// get_next_line_utils
+char				*ft_strchr(const char *str, int c);
+t_list				*ft_lstnew(void *content);
+void				ft_lstadd_back(t_list **lst, t_list *new);
+void				ft_lstdel_safely(t_list **head, t_list *node,
+						void (*del)(void *));
+void				ft_lstclear(t_list **lst, void (*del)(void *));
 
-// get_next_line_bonus
-char	*get_next_line(int fd);
+// get_next_line
+char				*get_next_line(int fd);
 
-#endif // GET_NEXT_LINE_BONUS_H
+#endif // GET_NEXT_LINE_H

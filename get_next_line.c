@@ -1,148 +1,173 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   gnl.c                                    :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joao-alm <support@toujoustudios.net>       +#+  +:+       +#+        */
+/*   By: joao-alm <joao-alm@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/05 15:41:40 by joao-alm          #+#    #+#             */
-/*   Updated: 2024/11/05 15:41:40 by joao-alm         ###   ########.fr       */
+/*   Created: 2025/02/24 11:44:18 by joao-alm          #+#    #+#             */
+/*   Updated: 2025/02/24 11:44:22 by joao-alm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdlib.h>
 #include <unistd.h>
 
 /**
- * Joins two strings, frees the first one, and returns the result.
+ * Calculates the length of the next line to be read from the file.
  *
- * @param s1 First string
- * @param s2 Second string
- * @return A new string containing s1 + s2
+ * @param file Linked list containing the file's contents.
+ * @return The length of the next line including the newline character (if any).
  */
-char	*ft_join_free(char *s1, char *s2)
+size_t	ft_line_len(t_list *file)
 {
-	char	*temp_buffer;
-
-	temp_buffer = ft_strjoin(s1, s2);
-	free(s1);
-	return (temp_buffer);
-}
-
-/**
- * Fills a line from the buffer up to and including the newline.
- *
- * @param buffer Input buffer
- * @return A newly allocated string containing the line
- */
-char	*ft_fill_line(const char *buffer)
-{
-	char	*line;
 	size_t	line_len;
 	size_t	i;
+	char	*rest;
 
 	line_len = 0;
-	while (buffer[line_len] && buffer[line_len] != '\n')
-		line_len++;
-	if (buffer[line_len] == '\n')
-		line_len++;
-	line = (char *)malloc(line_len + 1);
-	if (!line)
-		return (NULL);
-	i = -1;
-	while (++i < line_len)
-		line[i] = buffer[i];
-	line[i] = '\0';
-	return (line);
+	while (file && file->next)
+	{
+		line_len += BUFFER_SIZE;
+		file = file->next;
+	}
+	i = 0;
+	if (file)
+	{
+		rest = file->content;
+		while (rest[i] && rest[i] != '\n')
+			i++;
+		if (rest[i] == '\n')
+			i++;
+	}
+	return (line_len + i);
 }
 
 /**
- * Updates the buffer by removing the portion already read.
+ * Retrieves the next line from the file and stores it in the provided buffer.
  *
- * @param buffer Original buffer
- * @param line Line read from the buffer
- * @return A new buffer without the content of line
+ * @param file Linked list containing the file's contents.
+ * @param line Buffer to store the retrieved line.
  */
-char	*ft_update_buffer(char *buffer, const char *line)
+void	ft_get_line(t_list **file, char *line)
 {
-	size_t	buffer_len;
-	size_t	line_len;
-	ssize_t	i;
-	char	*new_buffer;
+	size_t	i;
+	size_t	j;
+	char	*rest;
 
-	buffer_len = ft_strlen(buffer);
-	line_len = ft_strlen(line);
-	if (buffer_len == line_len)
-		return (free(buffer), NULL);
-	new_buffer = (char *)malloc(buffer_len - line_len + 1);
-	if (!new_buffer)
-		return (free(buffer), NULL);
-	i = -1;
-	while (buffer[line_len + ++i])
-		new_buffer[i] = buffer[line_len + i];
-	new_buffer[i] = '\0';
-	free(buffer);
-	return (new_buffer);
+	j = 0;
+	while (*file)
+	{
+		rest = (*file)->content;
+		i = 0;
+		while (rest[i] && rest[i] != '\n')
+			line[j++] = rest[i++];
+		if (rest[i] == '\n')
+		{
+			line[j++] = rest[i];
+			break ;
+		}
+		ft_lstdel_safely(file, *file, free);
+	}
+	line[j] = '\0';
 }
 
 /**
- * Reads from the file descriptor into the buffer until a newline is found.
+ * Updates the buffer after reading a line, retaining any remaining content.
  *
- * @param fd File descriptor
- * @param buffer Buffer to read into
- * @return The updated buffer with data read from fd
+ * @param file Linked list containing the file's contents.
+ * @return 0 on success, -1 on error.
  */
-char	*ft_fill_buffer(int fd, char *buffer)
+int	ft_update_buffer(t_list **file)
 {
-	char	*temp_buffer;
+	char	*old_file;
+	char	*new_file;
+	size_t	stay;
+	size_t	len;
+
+	old_file = (*file)->content;
+	len = 0;
+	while (old_file[len] && old_file[len] != '\n')
+		len++;
+	if (!old_file[len])
+		return (ft_lstdel_safely(file, *file, free), 0);
+	len++;
+	stay = 0;
+	while (old_file[len + stay])
+		stay++;
+	new_file = malloc(stay + 1);
+	if (!new_file)
+		return (-1);
+	stay = 0;
+	while (old_file[len])
+		new_file[stay++] = old_file[len++];
+	new_file[stay] = '\0';
+	free((*file)->content);
+	(*file)->content = new_file;
+	return (0);
+}
+
+/**
+ * Reads data from the file descriptor and stores it in a linked list.
+ *
+ * @param file Linked list to store the read content.
+ * @param fd File descriptor from which data is read.
+ * @return 0 on success, -1 on error.
+ */
+int	ft_read_file(t_list **file, const int fd)
+{
+	char	*temp;
 	ssize_t	bytes_read;
+	t_list	*new_node;
 
-	if (!buffer)
-		buffer = ft_calloc(1, 1);
-	if (!buffer)
-		return (NULL);
-	temp_buffer = (char *)malloc(BUFFER_SIZE + 1);
-	if (!temp_buffer)
-		return (free(buffer), NULL);
 	bytes_read = 1;
 	while (bytes_read > 0)
 	{
-		bytes_read = read(fd, temp_buffer, BUFFER_SIZE);
-		if (bytes_read < 0)
-			return (free(buffer), free(temp_buffer), NULL);
-		temp_buffer[bytes_read] = '\0';
-		buffer = ft_join_free(buffer, temp_buffer);
-		if (!buffer)
-			return (free(temp_buffer), NULL);
-		if (ft_strchr(temp_buffer, '\n'))
+		temp = malloc(BUFFER_SIZE + 1);
+		if (!temp)
+			return (-1);
+		bytes_read = read(fd, temp, BUFFER_SIZE);
+		if (bytes_read == -1)
+			return (free(temp), -1);
+		temp[bytes_read] = '\0';
+		if (bytes_read == 0)
+			return (free(temp), 0);
+		new_node = ft_lstnew(temp);
+		if (!new_node)
+			return (free(temp), -1);
+		ft_lstadd_back(file, new_node);
+		if (ft_strchr(temp, '\n'))
 			break ;
 	}
-	return (free(temp_buffer), buffer);
+	return (0);
 }
 
 /**
- * Retrieves the next line from a file descriptor.
+ * Reads a line from the file descriptor, handling multiple buffers.
  *
- * @param fd File descriptor
- * @return The next line read from the file descriptor
+ * @param fd File descriptor to read from.
+ * @return The next line from the file or NULL if there is no more data.
  */
 char	*get_next_line(int fd)
 {
-	static char	*static_buffer;
-	char		*line;
+	static t_list	*file;
+	char			*line;
+	size_t			len;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	static_buffer = ft_fill_buffer(fd, static_buffer);
-	if (!static_buffer)
-		return (NULL);
-	line = ft_fill_line(static_buffer);
-	if (!line || !(line[0]))
-	{
-		free(static_buffer);
-		static_buffer = NULL;
-		return (free(line), NULL);
-	}
-	static_buffer = ft_update_buffer(static_buffer, line);
+	if (fd < 0 || fd > 1024)
+		return (ft_lstclear(&file, free), NULL);
+	if (!file || (file && !ft_strchr(file->content, '\n')))
+		if (ft_read_file(&file, fd) != 0)
+			return (ft_lstclear(&file, free), NULL);
+	len = ft_line_len(file);
+	if (len == 0)
+		return (ft_lstclear(&file, free), NULL);
+	line = malloc(len + 1);
+	if (!line)
+		return (ft_lstclear(&file, free), NULL);
+	ft_get_line(&file, line);
+	if (file && ft_update_buffer(&file) != 0)
+		return (ft_lstclear(&file, free), NULL);
 	return (line);
 }

@@ -1,24 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_get_next_line_utils.c                           :+:      :+:    :+:   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joao-alm <support@toujoustudios.net>       +#+  +:+       +#+        */
+/*   By: joao-alm <joao-alm@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/05 15:42:05 by joao-alm          #+#    #+#             */
-/*   Updated: 2024/11/05 15:42:05 by joao-alm         ###   ########.fr       */
+/*   Created: 2025/02/24 13:57:43 by joao-alm          #+#    #+#             */
+/*   Updated: 2025/02/24 13:57:46 by joao-alm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
 #include "get_next_line.h"
 
 /**
- * Finds the first occurrence of a character in a string.
+ * Locates the first occurrence of a character in a string.
  *
- * @param str String to search
- * @param c Character to find
- * @return Pointer to the first occurrence of c, or NULL if not found
- * IF c is '\0', returns a pointer to the null terminator.
+ * @param str The string to search.
+ * @param c The character to find.
+ * @return Pointer to the first occurrence of the character,
+ * or NULL if not found.
  */
 char	*ft_strchr(const char *str, int c)
 {
@@ -34,87 +35,94 @@ char	*ft_strchr(const char *str, int c)
 }
 
 /**
- * Returns the length of the string.
+ * Creates a new list element with the given content.
  *
- * @param s String to measure
- * @return Length of the string
+ * @param content The content of the new element.
+ * @return A pointer to the new list element.
  */
-size_t	ft_strlen(const char *s)
+t_list	*ft_lstnew(void *content)
 {
-	size_t	i;
+	t_list	*new_elem;
 
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
+	new_elem = (t_list *)malloc(sizeof(t_list));
+	if (!new_elem)
+		return (NULL);
+	new_elem->content = content;
+	new_elem->next = NULL;
+	return (new_elem);
 }
 
 /**
- * Fills the first 'n' bytes of memory with the given character.
+ * Adds a new element to the end of the list.
  *
- * @param s Pointer to memory
- * @param c Character to set
- * @param n Number of bytes to set
- * @return Pointer to the memory area
+ * @param lst Pointer to the list's head.
+ * @param new The new element to add.
  */
-void	*ft_memset(void *s, int c, size_t n)
+void	ft_lstadd_back(t_list **lst, t_list *new)
 {
-	size_t	i;
+	t_list	*last;
 
-	i = 0;
-	while (i < n)
-		((unsigned char *)s)[i++] = (unsigned char)c;
-	return (s);
+	if (!lst || !new)
+		return ;
+	if (*lst)
+	{
+		last = *lst;
+		while (last && last->next)
+			last = last->next;
+		last->next = new;
+	}
+	else
+		*lst = new;
 }
 
 /**
- * Allocates and zeroes memory for an array of elements.
+ * Deletes a specific node from the list, safely freeing its content.
  *
- * @param nmemb Number of elements
- * @param size Size of each element
- * @return Pointer to the allocated memory, or NULL if allocation fails
+ * @param head Pointer to the list's head.
+ * @param node The node to delete.
+ * @param del Function to free the content of the node.
  */
-void	*ft_calloc(size_t nmemb, size_t size)
+void	ft_lstdel_safely(t_list **head, t_list *node, void (*del)(void *))
 {
-	void	*ptr;
-	size_t	total_bytes;
+	t_list	*current;
 
-	total_bytes = nmemb * size;
-	if (size && ((total_bytes / size) != nmemb))
-		return (NULL);
-	ptr = malloc(total_bytes);
-	if (!ptr)
-		return (NULL);
-	ft_memset(ptr, 0, total_bytes);
-	return (ptr);
+	if (!head || !*head || !node)
+		return ;
+	if (node == *head)
+	{
+		*head = node->next;
+		if (del)
+			del(node->content);
+		free(node);
+		return ;
+	}
+	current = *head;
+	while (current->next != node)
+		current = current->next;
+	current->next = node->next;
+	if (del)
+		del(node->content);
+	free(node);
 }
 
 /**
- * Concatenates two strings into a newly allocated string.
+ * Clears the entire list, freeing all elements and their content.
  *
- * @param s1 First string
- * @param s2 Second string
- * @return Newly allocated string containing s1 + s2
+ * @param lst Pointer to the list's head.
+ * @param del Function to free the content of each node.
  */
-char	*ft_strjoin(char const *s1, char const *s2)
+void	ft_lstclear(t_list **lst, void (*del)(void *))
 {
-	char	*join;
-	size_t	s1_len;
-	size_t	s2_len;
-	size_t	i;
+	t_list	*current;
 
-	if (!s1 || !s2)
-		return (NULL);
-	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
-	join = (char *)malloc((s1_len + s2_len + 1) * sizeof(char));
-	if (!join)
-		return (NULL);
-	i = 0;
-	while (*s1)
-		join[i++] = *s1++;
-	while (*s2)
-		join[i++] = *s2++;
-	join[i] = '\0';
-	return (join);
+	if (!lst)
+		return ;
+	while (*lst)
+	{
+		current = *lst;
+		if (del)
+			del((*lst)->content);
+		*lst = (*lst)->next;
+		free(current);
+	}
 }
