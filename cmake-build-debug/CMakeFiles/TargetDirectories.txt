@@ -1,0 +1,6 @@
+/home/joao-alm/42/Get_Next_Line/cmake-build-debug/CMakeFiles/mandatory_buffer.dir
+/home/joao-alm/42/Get_Next_Line/cmake-build-debug/CMakeFiles/bonus_buffer.dir
+/home/joao-alm/42/Get_Next_Line/cmake-build-debug/CMakeFiles/mandatory_linkedlist.dir
+/home/joao-alm/42/Get_Next_Line/cmake-build-debug/CMakeFiles/bonus_linkedlist.dir
+/home/joao-alm/42/Get_Next_Line/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/joao-alm/42/Get_Next_Line/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,87 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.29"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "get_next_line",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "bonus_buffer::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bonus_buffer-Debug-5b4e992ccf8637df06cc.json",
+					"name" : "bonus_buffer",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "bonus_linkedlist::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bonus_linkedlist-Debug-2bc162ee40bd3bb451ea.json",
+					"name" : "bonus_linkedlist",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "mandatory_buffer::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-mandatory_buffer-Debug-0d8e594ee3efcaf89c7c.json",
+					"name" : "mandatory_buffer",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "mandatory_linkedlist::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-mandatory_linkedlist-Debug-d8f8eff8ad2b9eca9f67.json",
+					"name" : "mandatory_linkedlist",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/joao-alm/42/Get_Next_Line/cmake-build-debug",
+		"source" : "/home/joao-alm/42/Get_Next_Line"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

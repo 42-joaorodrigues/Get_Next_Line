@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.29)
+
+project(get_next_line)
+
+set(CMAKE_C_STANDARD 11)
+
+add_executable(mandatory_buffer get_next_line_buffer/get_next_line.c get_next_line_buffer/get_next_line.h
+		get_next_line_buffer/get_next_line_utils.c)
+add_executable(bonus_buffer get_next_line_buffer/get_next_line_utils_bonus.c get_next_line_buffer/get_next_line_bonus.h get_next_line_buffer/get_next_line_bonus.c)
+add_executable(mandatory_linkedlist get_next_line_linkedlist/get_next_line.c get_next_line_linkedlist/get_next_line.h get_next_line_linkedlist/get_next_line_utils.c)
+add_executable(bonus_linkedlist get_next_line_linkedlist/get_next_line_bonus.c get_next_line_linkedlist/get_next_line_bonus.h get_next_line_linkedlist/get_next_line_utils_bonus.c)
