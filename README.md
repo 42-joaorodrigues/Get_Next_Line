@@ -4,10 +4,6 @@
 ![C Badge](https://img.shields.io/badge/Language-C-blue)
 ![Status Badge](https://img.shields.io/badge/Status-Completed-success)
 
-## Project Details
-
-For full project requirements, see the [Subject File](./subject.md).
-
 ## Multiple Implementations
 
 This repository contains **two distinct implementations** of the `get_next_line` project:
